@@ -1,0 +1,2 @@
+#!/bin/sh -e
+echo "settings:\n  bind_address: 0.0.0.0\n  port: 8675" > $SNAP_DATA/config.yaml
