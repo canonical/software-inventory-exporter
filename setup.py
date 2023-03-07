@@ -19,7 +19,7 @@ setup(
     packages=["software_inventory_exporter"],
     entry_points={
         "console_scripts": [
-            "software-inventory-exporter=software_inventory_exporter.exporter:main",
+            "software-inventory-exporter=software_inventory_exporter.cli:main",
         ]
     },
     setup_requires=["setuptools_scm"],

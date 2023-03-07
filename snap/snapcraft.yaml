@@ -15,7 +15,7 @@ architectures:
 
 apps:
   software-inventory-exporter:
-    command: bin/software-inventory-exporter -c $SNAP_DATA/config.yaml
+    command: bin/software-inventory-exporter $SNAP_DATA/config.yaml
     daemon: simple
     restart-condition: on-abnormal
     plugs:

@@ -1,36 +1,12 @@
-"""Exporter unit tests."""
+"""API unit tests."""
 import subprocess
 
 import pytest
 from fastapi.testclient import TestClient
 
-from software_inventory_exporter import exporter
+from software_inventory_exporter import api, exporter
 
-client = TestClient(exporter.app)
-
-
-def test_main(mocker):
-    """Test the main function."""
-    testargs = ["bin/software-inventory-exporter", "-c", "/tmp/config.yaml"]
-    mocker.patch.object(exporter.sys, "argv", testargs)
-    uvicorn_mock = mocker.patch.object(exporter.uvicorn, "run")
-    mocked_config_file = mocker.mock_open(
-        read_data="settings:\n  bind_address: 0.0.0.0\n  port: 8675"
-    )
-    mocker.patch("builtins.open", mocked_config_file)
-    exporter.main()
-    uvicorn_mock.assert_called_once()
-
-
-def test_main_exit(mocker):
-    """Test the main function when exit."""
-    testargs = ["bin/software-inventory-exporter", "/tmp/config.yaml"]
-    mocker.patch.object(exporter.sys, "argv", testargs)
-    uvicorn_mock = mocker.patch.object(exporter.uvicorn, "run")
-    with pytest.raises(SystemExit) as mock_exception:
-        exporter.main()
-    assert mock_exception.value.code == 1
-    uvicorn_mock.assert_not_called()
+client = TestClient(api.app)
 
 
 def test_hostname(mocker):
