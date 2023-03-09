@@ -32,9 +32,9 @@ def main(argv: Optional[List[Any]] = None) -> None:
         config = yaml.safe_load(target_config.read_text(encoding="utf-8"))["settings"]
         uvicorn.run(app, host=config["bind_address"], port=int(config["port"]))
 
-    except (KeyError, yaml.YAMLError):
-        logger.error("Config file wrong format.")
-        raise SystemExit(1)
+    except (KeyError, yaml.YAMLError) as error:
+        logger.error("Config file wrong format: %s.", error)
+        raise SystemExit(1) from error
 
 
 if __name__ == "__main__":  # pragma: no cover

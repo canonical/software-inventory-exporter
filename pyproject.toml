@@ -3,7 +3,7 @@
 # within individual snap repos. https://launchpad.net/bootstack-charms-spec
 
 [tool.flake8]
-ignore = ["C901", "D102", "D103", "W503", "W504"]
+ignore = ["C901", "D100", "D101", "D102", "D103", "W503", "W504"]
 exclude = ['.eggs', '.git', '.tox', '.venv', '.build', 'build', 'report']
 max-line-length = 99
 max-complexity = 10
@@ -36,22 +36,15 @@ skip_glob = [
 
 [tool.pylint]
 max-line-length = 99
-ignore = ['.eggs', '.git', '.tox', '.venv', '.build', 'report', 'tests']
-disable = ["W0707"]
+ignore = ['.eggs', '.git', '.tox', '.venv', '.build', 'build', 'report', 'tests']
 
 [tool.mypy]
 warn_unused_ignores = true
 warn_unused_configs = true
 warn_unreachable = true
 disallow_untyped_defs = true
-exclude = ['.eggs', '.git', '.tox', '.venv', '.build', 'report', 'tests']
-
-## Ignore unsupported imports
-[[tool.mypy.overrides]]
-module = [
-  "setuptools.*",
-]
 ignore_missing_imports = true
+exclude = ['.eggs', '.git', '.tox', '.venv', '.build', 'build', 'report', 'tests']
 
 [tool.coverage.run]
 relative_files = true

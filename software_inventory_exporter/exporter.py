@@ -17,7 +17,7 @@ def generate_hostname_output() -> str:
         return socket.gethostname()
     except Exception as error:
         logger.error("Failed to get hostname %s", error)
-        raise HTTPException(status_code=500, detail="Server error")
+        raise HTTPException(status_code=500, detail="Server error") from error
 
 
 def generate_kernel_output() -> Dict:
@@ -26,7 +26,11 @@ def generate_kernel_output() -> Dict:
 
 
 def generate_dpkg_output() -> List[Dict]:
-    """Generate Debian package output."""
+    """Generate Debian package output.
+
+    The first 5 lines of the output are headers. The expected format
+    can be found at `resources` in the unit tests.
+    """
     cmd = "dpkg -l"
     try:
         dpkg = str(subprocess.check_output(cmd.split(), timeout=10))
@@ -45,19 +49,23 @@ def generate_dpkg_output() -> List[Dict]:
 
     except subprocess.TimeoutExpired as error:
         logger.error("Timeout to list dpkg %s", error)
-        raise HTTPException(status_code=500, detail="Server error")
+        raise HTTPException(status_code=500, detail="Server error") from error
 
     except subprocess.CalledProcessError as error:
         logger.error("CalledProcessError to list dpkg: %s", error)
-        raise HTTPException(status_code=500, detail="Server error")
+        raise HTTPException(status_code=500, detail="Server error") from error
 
     except ValueError as error:
         logger.error("ValueError to list dpkg: %s", error)
-        raise HTTPException(status_code=500, detail="Server error")
+        raise HTTPException(status_code=500, detail="Server error") from error
 
 
 def generate_snap_output() -> List[Dict]:
-    """Generate snap output."""
+    """Generate snap output.
+
+    The first line of the output is a table header. The expected format
+    can be found at `resources` in the unit tests.
+    """
     cmd = "snap list"
     try:
         snaps = str(subprocess.check_output(cmd.split(), timeout=10))
@@ -77,12 +85,12 @@ def generate_snap_output() -> List[Dict]:
         return output
     except subprocess.TimeoutExpired as error:
         logger.error("Timeout to list snap %s", error)
-        raise HTTPException(status_code=500, detail="Server error")
+        raise HTTPException(status_code=500, detail="Server error") from error
 
     except subprocess.CalledProcessError as error:
         logger.error("CalledProcessError to list snap: %s", error)
-        raise HTTPException(status_code=500, detail="Server error")
+        raise HTTPException(status_code=500, detail="Server error") from error
 
     except ValueError as error:
         logger.error("ValueError to list snap: %s", error)
-        raise HTTPException(status_code=500, detail="Server error")
+        raise HTTPException(status_code=500, detail="Server error") from error
