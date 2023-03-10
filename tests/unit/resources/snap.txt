@@ -1,0 +1,1 @@
+Name                         Version                      Rev    Tracking         Publisher     Notes\nbare                         1.0                          5      latest/stable    canonical✓    base\ncharmcraft                   2.2.0                        1171   latest/stable    canonical✓    classic\n

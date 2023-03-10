@@ -1,0 +1,35 @@
+name: software-inventory-exporter
+base: core22
+adopt-info: software-inventory-exporter
+summary: Exporter for apt packages and snaps in json via web
+description: |
+  This snap runs a simple python http server that serves apt packages and snaps
+  in json format.
+grade: stable
+confinement: classic
+environment:
+  PYTHONPATH: $SNAP/lib/python3.10/site-packages:$PYTHONPATH
+
+architectures:
+  - build-on: [amd64]
+
+apps:
+  software-inventory-exporter:
+    command: bin/software-inventory-exporter $SNAP_DATA/config.yaml
+    daemon: simple
+    restart-condition: on-abnormal
+    plugs:
+      - network
+      - network-bind
+
+parts:
+  software-inventory-exporter:
+    plugin: python
+    source: .
+    python-requirements: [./requirements.txt]
+    python-packages:
+      - .
+    override-build: |
+        snapcraftctl build
+        echo "Version: $(python3 setup.py --version)"
+        craftctl set version="$(python3 setup.py --version)"
