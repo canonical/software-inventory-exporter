@@ -6,7 +6,10 @@ import socket
 import subprocess
 from typing import Dict, List
 
+import requests
 from fastapi import HTTPException
+
+from software_inventory_exporter.snapd import SnapdAdapter
 
 logger = logging.getLogger(__name__)
 
@@ -31,7 +34,7 @@ def generate_dpkg_output() -> List[Dict]:
     The first 5 lines of the output are headers. The expected format
     can be found at `resources` in the unit tests.
     """
-    cmd = "dpkg -l"
+    cmd = "dpkg -l --admindir=/var/lib/snapd/hostfs/var/lib/dpkg"
     try:
         dpkg = str(subprocess.check_output(cmd.split(), timeout=10))
         lines = dpkg.split("\\n")
@@ -63,34 +66,18 @@ def generate_dpkg_output() -> List[Dict]:
 def generate_snap_output() -> List[Dict]:
     """Generate snap output.
 
-    The first line of the output is a table header. The expected format
-    can be found at `resources` in the unit tests.
+    Use the snapd-api to list all installed snaps in the machine.
+    See more information at https://snapcraft.io/docs/snapd-api
     """
-    cmd = "snap list"
     try:
-        snaps = str(subprocess.check_output(cmd.split(), timeout=10))
-        lines = snaps.split("\\n")
-        lines = lines[1:-1]
-        output = []
-        for line in lines:
-            snap, version, revision, tracking, *_ = line.split()
-            output.append(
-                {
-                    "snap": snap,
-                    "version": version,
-                    "revision": revision,
-                    "tracking": tracking,
-                }
-            )
-        return output
-    except subprocess.TimeoutExpired as error:
-        logger.error("Timeout to list snap %s", error)
+        session = requests.Session()
+        session.mount("http://snapd/", SnapdAdapter())
+        response = session.get("http://snapd/v2/snaps", timeout=10)
+        response.raise_for_status()
+        return response.json()["result"]
+    except requests.exceptions.RequestException as error:
+        logger.error("Error to list snap %s", error)
         raise HTTPException(status_code=500, detail="Server error") from error
-
-    except subprocess.CalledProcessError as error:
-        logger.error("CalledProcessError to list snap: %s", error)
-        raise HTTPException(status_code=500, detail="Server error") from error
-
-    except ValueError as error:
-        logger.error("ValueError to list snap: %s", error)
+    except KeyError as error:
+        logger.error("Error to list snap %s", error)
         raise HTTPException(status_code=500, detail="Server error") from error
