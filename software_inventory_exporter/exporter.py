@@ -75,9 +75,6 @@ def generate_snap_output() -> List[Dict]:
         response = session.get("http://snapd/v2/snaps", timeout=10)
         response.raise_for_status()
         return response.json()["result"]
-    except requests.exceptions.RequestException as error:
-        logger.error("Error to list snap %s", error)
-        raise HTTPException(status_code=500, detail="Server error") from error
-    except KeyError as error:
+    except (requests.exceptions.RequestException, KeyError) as error:
         logger.error("Error to list snap %s", error)
         raise HTTPException(status_code=500, detail="Server error") from error

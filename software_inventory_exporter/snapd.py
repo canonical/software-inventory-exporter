@@ -8,7 +8,7 @@ from urllib3.connectionpool import HTTPConnectionPool
 
 
 class SnapdConnection(HTTPConnection):  # pragma: no cover
-    """Create snapd connection thru socket at localhost."""
+    """Create snapd connection through a local socket at the host."""
 
     def __init__(self) -> None:
         """Create SnapdConnection on localhost."""
