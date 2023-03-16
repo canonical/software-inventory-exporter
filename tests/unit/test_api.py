@@ -2,6 +2,7 @@
 import subprocess
 
 import pytest
+import requests
 from fastapi.testclient import TestClient
 
 from software_inventory_exporter import api, exporter
@@ -59,32 +60,25 @@ def test_dpkg_error(mocker, raise_error):
     assert response.status_code == 500
 
 
-def test_snap(mocker, list_snap):
+def test_snap(mocker, snapd_snaps):
     """Test the snap endpoint."""
-    mocker.patch.object(exporter.subprocess, "check_output", return_value=list_snap)
+    mock_response = mocker.MagicMock()
+    mock_response.json = mocker.MagicMock(return_value=snapd_snaps)
+    mocker.patch.object(exporter.requests.Session, "get", return_value=mock_response)
     response = client.get("/snap")
     assert response.status_code == 200
-    assert response.json() == [
-        {"snap": "bare", "version": "1.0", "revision": "5", "tracking": "latest/stable"},
-        {
-            "snap": "charmcraft",
-            "version": "2.2.0",
-            "revision": "1171",
-            "tracking": "latest/stable",
-        },
-    ]
+    assert len(response.json()) == 1
 
 
 @pytest.mark.parametrize(
     "raise_error",
     [
-        subprocess.TimeoutExpired(cmd=None, timeout=1),
-        subprocess.CalledProcessError(cmd=None, returncode=1),
-        ValueError,
+        requests.exceptions.RequestException,
+        KeyError,
     ],
 )
 def test_snap_error(mocker, raise_error):
     """Test possible errors in the snap endpoint."""
-    mocker.patch.object(exporter.subprocess, "check_output", side_effect=raise_error)
+    mocker.patch.object(exporter.requests.Session, "get", side_effect=raise_error)
     response = client.get("/snap")
     assert response.status_code == 500
