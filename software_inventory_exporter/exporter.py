@@ -1,17 +1,19 @@
 """Exporter module."""
 
+import json
 import logging
 import platform
 import socket
 import subprocess
+from pathlib import Path
 from typing import Dict, List
 
-import requests
+import yaml
 from fastapi import HTTPException
 
-from software_inventory_exporter.snapd import SnapdAdapter
-
 logger = logging.getLogger(__name__)
+
+SNAPD_STATE = "/var/lib/snapd/state.json"
 
 
 def generate_hostname_output() -> str:
@@ -50,31 +52,21 @@ def generate_dpkg_output() -> List[Dict]:
             )
         return output
 
-    except subprocess.TimeoutExpired as error:
-        logger.error("Timeout to list dpkg %s", error)
-        raise HTTPException(status_code=500, detail="Server error") from error
-
-    except subprocess.CalledProcessError as error:
-        logger.error("CalledProcessError to list dpkg: %s", error)
-        raise HTTPException(status_code=500, detail="Server error") from error
-
-    except ValueError as error:
-        logger.error("ValueError to list dpkg: %s", error)
+    except (subprocess.TimeoutExpired, subprocess.CalledProcessError, ValueError) as error:
+        logger.error("Error generating dpkg output %s", error)
         raise HTTPException(status_code=500, detail="Server error") from error
 
 
-def generate_snap_output() -> List[Dict]:
-    """Generate snap output.
-
-    Use the snapd-api to list all installed snaps in the machine.
-    See more information at https://snapcraft.io/docs/snapd-api
-    """
+def generate_snap_output() -> Dict:
+    """Generate snap output by reading the snapd state."""
     try:
-        session = requests.Session()
-        session.mount("http://snapd/", SnapdAdapter())
-        response = session.get("http://snapd/v2/snaps", timeout=10)
-        response.raise_for_status()
-        return response.json()["result"]
-    except (requests.exceptions.RequestException, KeyError) as error:
-        logger.error("Error to list snap %s", error)
+        snaps = json.loads(Path(SNAPD_STATE).read_text(encoding="UTF-8"))["data"]["snaps"]
+        for snap in snaps.keys():
+            snap_meta = yaml.safe_load(
+                Path(f"/snap/{snap}/current/meta/snap.yaml").read_text(encoding="UTF-8")
+            )
+            snaps[snap]["version"] = snap_meta["version"]
+        return snaps
+    except (FileNotFoundError, ValueError, KeyError, yaml.YAMLError) as error:
+        logger.error("Error generating snap output: %s", error)
         raise HTTPException(status_code=500, detail="Server error") from error

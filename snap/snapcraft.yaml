@@ -15,13 +15,15 @@ architectures:
   - build-on: [amd64]
 
 plugs:
-  apt-dpkg-db:
+  snap-apt-dpkg-db:
     interface: system-files
     read:
       - /var/lib/snapd/hostfs/var/lib/dpkg
       - /var/lib/snapd/hostfs/var/cache/apt
       - /etc/apt
       - /etc/dpkg
+      - /var/lib/snapd/state.json
+      - /snap
 
 layout:
   /usr/share/dpkg:
@@ -39,8 +41,7 @@ apps:
     plugs:
       - network
       - network-bind
-      - apt-dpkg-db
-      - snapd-control
+      - snap-apt-dpkg-db
 
 parts:
   software-inventory-exporter:

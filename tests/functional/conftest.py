@@ -27,18 +27,13 @@ def install_package():
         logging.info(f"Installing {software_inventory_exporter_snap}")
         assert os.path.isfile(software_inventory_exporter_snap)
         assert subprocess.check_call(install_cmd) == 0  # noqa
-        unblock_interfaces_cmd = [
-            "snapd-control",
-            "apt-dpkg-db",
-        ]
-        for interface in unblock_interfaces_cmd:
-            logging.info(f"Unblocking the interface: {interface}")
-            assert (
-                subprocess.check_call(
-                    f"sudo snap connect software-inventory-exporter:{interface}".split()
-                )
-                == 0
+        logging.info("Unblocking the interface snap-apt-dpkg-db")
+        assert (
+            subprocess.check_call(
+                "sudo snap connect software-inventory-exporter:snap-apt-dpkg-db".split()
             )
+            == 0
+        )
     else:
         logging.warning("Installing python package")
         assert subprocess.check_call("python3 -m pip install .".split()) == 0
