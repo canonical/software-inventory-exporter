@@ -1,4 +1,6 @@
 """Conftest module for unit tests."""
+import json
+
 import pytest
 
 
@@ -16,58 +18,42 @@ def list_dpkg():
 
 @pytest.fixture
 def snapd_snaps():
-    return {
-        "type": "sync",
-        "status-code": 200,
-        "status": "OK",
-        "result": [
-            {
-                "id": "pHxyR7qwIBt0ZMMxMLbhal5V6b0cI3jE",
-                "title": "CVEScan",
-                "summary": "Security/CVE vulnerability monitoring for Ubuntu",
-                "description": "Check whether all available security patches have been installed.",
-                "installed-size": 43163648,
-                "name": "cvescan",
-                "publisher": {
-                    "id": "canonical",
-                    "username": "canonical",
-                    "display-name": "Canonical",
-                    "validation": "verified",
+    """Equivalent of the content of the file at /var/lib/snapd/state.json ."""
+    snaps = {
+        "data": {
+            "snaps": {
+                "core20": {
+                    "type": "base",
+                    "sequence": [
+                        {
+                            "name": "core20",
+                            "snap-id": "DLqre5XGLbDqg9jPtiAhRRjDuPVa5X1q",
+                            "revision": "1822",
+                            "channel": "latest/stable",
+                            "links": {"contact": ["https://github.com/snapcore/core20/issues"]},
+                            "contact": "https://github.com/snapcore/core20/issues",
+                            "title": "core20",
+                            "summary": "Runtime environment based on Ubuntu 20.04",
+                            "description": "The base snap based on the Ubuntu 20.04 release.",
+                        },
+                        {
+                            "name": "core20",
+                            "snap-id": "DLqre5XGLbDqg9jPtiAhRRjDuPVa5X1q",
+                            "revision": "1828",
+                            "channel": "latest/stable",
+                            "links": {"contact": ["https://github.com/snapcore/core20/issues"]},
+                            "contact": "https://github.com/snapcore/core20/issues",
+                            "title": "core20",
+                            "summary": "Runtime environment based on Ubuntu 20.04",
+                            "description": "The base snap based on the Ubuntu 20.04 release.",
+                        },
+                    ],
+                    "active": True,
+                    "current": "1828",
+                    "channel": "latest/stable",
+                    "last-refresh-time": "2023-03-08T09:06:07.732371956-03:00",
                 },
-                "developer": "canonical",
-                "status": "active",
-                "type": "app",
-                "base": "core18",
-                "version": "2.5.0",
-                "channel": "stable",
-                "tracking-channel": "latest/stable",
-                "ignore-validation": False,
-                "revision": "281",
-                "confinement": "strict",
-                "private": False,
-                "devmode": False,
-                "jailmode": False,
-                "apps": [
-                    {"snap": "cvescan", "name": "cvescan"},
-                    {"snap": "cvescan", "name": "sh"},
-                ],
-                "license": "GPL-3.0",
-                "mounted-from": "/var/lib/snapd/snaps/cvescan_281.snap",
-                "links": {
-                    "contact": ["https://github.com/canonical/sec-cvescan/issues"],
-                    "website": ["https://github.com/canonical/sec-cvescan"],
-                },
-                "contact": "https://github.com/canonical/sec-cvescan/issues",
-                "website": "https://github.com/canonical/sec-cvescan",
-                "media": [
-                    {
-                        "type": "screenshot",
-                        "url": "https://dashboard.snapcraft.io/appmedia/cvescan_demo.gif",
-                        "width": 784,
-                        "height": 688,
-                    }
-                ],
-                "install-date": "2023-03-14T10:45:53.357333475-03:00",
-            },
-        ],
+            }
+        }
     }
+    return json.dumps(snaps)

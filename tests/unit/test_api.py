@@ -2,7 +2,6 @@
 import subprocess
 
 import pytest
-import requests
 from fastapi.testclient import TestClient
 
 from software_inventory_exporter import api, exporter
@@ -62,23 +61,26 @@ def test_dpkg_error(mocker, raise_error):
 
 def test_snap(mocker, snapd_snaps):
     """Test the snap endpoint."""
-    mock_response = mocker.MagicMock()
-    mock_response.json = mocker.MagicMock(return_value=snapd_snaps)
-    mocker.patch.object(exporter.requests.Session, "get", return_value=mock_response)
+    snap = "core20"
+    version = "20230207"
+    mocker.patch("pathlib.Path.open", mocker.mock_open(read_data=snapd_snaps))
+    mocker.patch.object(exporter.yaml, "safe_load", return_value={"version": version})
     response = client.get("/snap")
     assert response.status_code == 200
-    assert len(response.json()) == 1
+    content = response.json()
+    assert len(content) == 1
+    assert content[snap]["version"] == version
 
 
 @pytest.mark.parametrize(
     "raise_error",
     [
-        requests.exceptions.RequestException,
-        KeyError,
+        ValueError,
+        FileNotFoundError,
     ],
 )
 def test_snap_error(mocker, raise_error):
     """Test possible errors in the snap endpoint."""
-    mocker.patch.object(exporter.requests.Session, "get", side_effect=raise_error)
+    mocker.patch.object(exporter, "Path", side_effect=raise_error)
     response = client.get("/snap")
     assert response.status_code == 500

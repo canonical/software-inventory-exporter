@@ -39,6 +39,6 @@ def get_dpkg() -> List[Dict]:
 
 
 @app.get("/snap")
-def get_snap() -> List[Dict]:
+def get_snap() -> Dict:
     """List the snap packages installed in the machine."""
     return exporter.generate_snap_output()
