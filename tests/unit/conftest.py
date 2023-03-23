@@ -52,7 +52,6 @@ def snapd_snaps():
                     "current": "1828",
                     "channel": "latest/stable",
                     "last-refresh-time": "2023-03-08T09:06:07.732371956-03:00",
-                    "version": "20230207",
                 },
             }
         }
