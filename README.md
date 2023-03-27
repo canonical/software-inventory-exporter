@@ -8,9 +8,6 @@ To get the latest stable version of the snap from Snapstore, run:
 
 ```shell
 sudo snap install software-inventory-exporter
-# connect interfaces
-sudo snap connect software-inventory-exporter:apt-dpkg-db
-sudo snap connect software-inventory-exporter:snapd-control
 ```
 
 To get the latest development version of the snap, build from the source code and install with --dangerous flag:
@@ -19,8 +16,7 @@ To get the latest development version of the snap, build from the source code an
 make build
 sudo snap install software-inventory-exporter.snap --dangerous
 # connect interfaces
-sudo snap connect software-inventory-exporter:apt-dpkg-db
-sudo snap connect software-inventory-exporter:snapd-control
+sudo snap connect software-inventory-exporter:snap-apt-dpkg-db
 ```
 
 ## Configuration
