@@ -6,13 +6,13 @@ license: GPL-3.0
 description: |
   This snap runs a simple python http server that serves apt packages and snaps
   in json format.
+architectures:
+  - build-on: amd64
+  - build-on: arm64
 grade: stable
 confinement: strict
 environment:
   PYTHONPATH: $SNAP/lib/python3.10/site-packages:$PYTHONPATH
-
-architectures:
-  - build-on: [amd64]
 
 plugs:
   snap-apt-dpkg-db:
