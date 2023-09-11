@@ -42,3 +42,9 @@ def get_dpkg() -> List[Dict]:
 def get_snap() -> Dict:
     """List the snap packages installed in the machine."""
     return exporter.generate_snap_output()
+
+
+@app.get("/release")
+def get_snap() -> Dict:
+    """List the snap packages installed in the machine."""
+    return exporter.generate_release_output()
