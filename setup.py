@@ -13,7 +13,7 @@ setup(
     use_scm_version={"local_scheme": "node-and-date"},
     description="Exporter for apt packages and snaps in json via web",
     long_description=readme,
-    author="Canonical BootStack DevOps Centres",
+    author="Canonical BootStack",
     url="https://github.com/canonical/software-inventory-exporter",
     license=project_license,
     packages=["software_inventory_exporter"],
