@@ -2,6 +2,7 @@
 
 import json
 import logging
+import lsb_release
 import platform
 import socket
 import subprocess
@@ -28,6 +29,11 @@ def generate_hostname_output() -> str:
 def generate_kernel_output() -> Dict:
     """Generate kernel version output."""
     return {"kernel": platform.release()}
+
+
+def generate_release_output() -> Dict:
+    """Generate kernel version output."""
+    return {"release": lsb_release.get_distro_information()['CODENAME']}
 
 
 def generate_dpkg_output() -> List[Dict]:
